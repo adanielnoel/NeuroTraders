@@ -1,0 +1,13 @@
+{
+  "time_format_str": "%Y-%m-%d",
+  "max_news_per_day": 100,
+  "quandl_api_key": "bYNHAsGguxFWJsjg3ccN",
+  "stock_cols": {
+    "adj_open": {"provider": "StockValues", "quandl_name": "Adj. Open"},
+    "adj_close": {"provider": "StockValues", "quandl_name": "Adj. Close"},
+    "adj_vol": {"provider": "StockValues", "quandl_name": "Adj. Volume"},
+    "vol_m_ave_10": {"provider": "StockValues"},
+    "relative_close": {"provider": "StockValues"},
+    "sentiment": {"provider": "StockSentiment"}
+  }
+}
