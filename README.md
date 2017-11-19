@@ -1,7 +1,10 @@
+# NeuroTraders
+
 With the advent of recurrent neural networks becoming increasingly popular in solving complex time-series predictions, we decided to give it a try in predicting stock prices using recurrent neural networks with LSTM architecture. Moreover, we combine stock market data with online news from different sources.
 The paper can be downloaded [ADD LINK HERE].
  
-##Project structure
+## Project structure
+
 The overall structure of the code is as follows:
 
 - `secdata/` : This directory contains all the code relating to building and managing a database for a certain security (so far only stocks)
@@ -18,7 +21,8 @@ The overall structure of the code is as follows:
 
 - `new_database/`: The database we compiled for the project and that we decided to include so that it is easier to start experimenting with the code.
 
-##How to get started
+## How to get started
+
 The code has been developed in Python 3.5, we do not know if it will work properly in other versions. Moreover, the following packages must be present in the system:
 
 - **Scikit learn:** Required for predictors and for `sentiment_benchmark_script.py`
@@ -51,4 +55,5 @@ Other runnable scripts, used for "dirty testing" in the project are (scroll to t
 - `LSTM_test.py`: This can be found in `predictors/RNN_under_development` and might not work since it's under development. Still interesting to take a look since it's cleaner that the scripts in `predictors/RNN_used_in_paper` and has better data formatting methods.
 
 ## Further work
+
 Development of the project is likely to become stagnant or sporadic.
