@@ -4,6 +4,8 @@ from scrapy.selector import Selector
 from dateutil import parser
 from Packages.WebScrapper.items import NewsLink
 from datetime import datetime
+from secdata import utils
+from secdata.settings import settings
 
 import logging
 logging.getLogger('scrapy').setLevel(logging.FATAL)
@@ -13,14 +15,13 @@ class GoogleFinanceSearchSpider(Spider):
     name = "google_finance"
     allowed_domains = ["finance.google.com/finance/company_news"]
 
-    def __init__(self, ticker, start_date, end_date, exchange, manager_crawler):
+    def __init__(self, query, callback):
         scrapy.Spider.__init__(self)
         self.start_urls = [
             "https://finance.google.com/finance/company_news?q={}%3A{}&startdate={}&enddate={}&start=0&num=1000".
-            format(exchange, ticker, start_date.strftime("%Y-%m-%d"), end_date.strftime("%Y-%m-%d"))]
+            format(query.exchange, query.ticker, query.start_date, query.end_date)]
         print(self.start_urls)
-        self.manager_crawler = manager_crawler
-        # TODO: Fix this shitty way of passing around the crawler
+        self.callback = callback
 
     def parse(self, response):
         print(response.url)
@@ -36,7 +37,7 @@ class GoogleFinanceSearchSpider(Spider):
             # Convert date to be consistent with the rest of the project
             print(date)
             if "ago" in date:
-                date = datetime.today().strftime("%Y-%m-%d")
+                date = utils.today()
             else:
-                date = parser.parse(date).strftime("%Y-%m-%d")
-            yield NewsLink(date=date, title=title, link=link)
+                date = parser.parse(date).strftime(settings["time_format_str"])
+            yield NewsLink(date=date, title=title, link=link, time="")

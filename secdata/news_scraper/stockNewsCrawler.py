@@ -1,174 +1,192 @@
-from scrapy.crawler import CrawlerProcess
-from scrapy.settings import Settings
-from scrapy import signals
-import secdata.news_scraper.spiders as spiders
-from datetime import datetime, timedelta
-import nltk
-nltk.download('punkt')
-# Todo: check if package is downloaded
-import numpy as np
-import os
-from goose3 import Goose
-import unicodedata
-
+import difflib
 import logging
-logging.getLogger('scrapy').setLevel(logging.FATAL)
+import os
+from random import shuffle
+import json
 
+import scrapy.settings
+from goose3 import Goose
+from goose3.network import NetworkError
+from requests.exceptions import MissingSchema
+from scrapy.crawler import CrawlerProcess
 
-class Headline:
-    def __init__(self):
-        title = ""
-        link = ""
-        date = ""
+import secdata.news_scraper.spiders as spiders
+from secdata import utils
+from secdata.Query import StockQuery
+from secdata.news_scraper.UserAgents import UserAgent
+from secdata.news_scraper.items import NewsLink
+from secdata.settings import settings
+
+# logging.getLogger('scrapy').setLevel(logging.FATAL)
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 class StockNewsCrawler:
+    heads_file_name = "headlines.json"
+    news_folder = "news"
+    news_file_name = "news.json"
 
-    def __init__(self,
-                 ticker,
-                 init_date=datetime.now()-timedelta(days=10),
-                 end_date=datetime.today(),
-                 exchange="NASDAQ"):
-        self.ticker = ticker
-        self.exchange = exchange
-        self.start_date = init_date
-        self.end_date = end_date
-        self.links = {}  # key: spider name, value: list of links to process
-        self.pages = []  # List of downloaded pages (each element is a dictionary)
-        self.scores = {}  # Dictionary of dates with article count and (cumulative) sentiment score for each
+    def __init__(self, query):
+        self.query = query
+        self.headlines = {}
+        self.news = {}
 
-        with open(os.path.dirname(os.path.realpath(__file__)) + "/resources/positive.csv", "r") as f:
-            self.positive_tks = [l.strip() for l in f.readlines()]
-        with open(os.path.dirname(os.path.realpath(__file__)) + "/resources/negative.csv", "r") as f:
-            self.negative_tks = [l.strip() for l in f.readlines()]
-        with open(os.path.dirname(os.path.realpath(__file__)) + "/resources/uncertainty.csv", "r") as f:
-            self.uncertainty_tks = [l.strip() for l in f.readlines()]
-
-    def get_headlines(self):
-        """
-
-        :return: a list of Headline objects
-        """
-        # STEP 1: Search for the links of news pages
-        settings = Settings()
-        settings.set("USER_AGENT",
-                     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Safari/604.1.38")
-        # settings.set("ITEM_PIPELINES", {'pipelines.NewsLinkPipeline': 100})
-        crawler = CrawlerProcess(settings)
-        # crawler.settings.
+    def read_headlines(self, filter_dates=None):
+        if filter_dates is not None:
+            self.query.add_attribute("filter_dates", filter_dates)
+        process_settings = scrapy.settings.Settings()
+        process_settings.set("USER_AGENT", UserAgent().random())
+        process_settings.set("LOG_ENABLED", "False")
+        process = CrawlerProcess(process_settings)
         for Spider in spiders.search_spiders:
-            crawler.crawl(Spider,
-                          ticker=self.ticker,
-                          exchange=self.exchange,
-                          start_date=self.start_date,
-                          end_date=self.end_date,
-                          manager_crawler=self)
-        # for individual_crawler in crawler.crawlers:
-        #     individual_crawler.signals.connect(self.add_headline, signal=signals.engine_started)
-            # TODO: Check what's wrong with the signals (not getting triggered)
-        crawler.start()
-        crawler.stop()
-
-        for page in self.pages:
-            page["body"] = ""
-            if "www.reuters.com" in page["link"]:
-                continue
-            try:
-                article = Goose().extract(url=page["link"])
-                body = article.cleaned_text
-                body = unicodedata.normalize('NFKD', body).encode('ascii', 'ignore').decode("utf-8").replace('\u00a0', ' ')
-                page["body"] = body
-            except:
-                continue
-
-        return self.pages
-
-    def analyse_articles(self, articles=None):
-        if articles is None:
-            articles = self.pages
-        self.scores = {}
-        for article in articles:
-            print('Analysing "%s"' % article["title"])
-            scores = self.process_sentiment(article["title"], article["body"])
-            if article["date"] in self.scores.keys():
-                self.scores[article["date"]]["score"] += np.array(scores)
-                self.scores[article["date"]]["article_count"] += 1
-            else:
-                self.scores[article["date"]] = {}
-                self.scores[article["date"]]["score"] = np.array(scores)
-                self.scores[article["date"]]["article_count"] = 1
-        # Snap article count into levels 0% = 0, 33% < 10, 66% < 100, 100% > 100
-        for key in self.scores.keys():
-            if self.scores[key]["article_count"] == 0:
-                continue
-            elif self.scores[key]["article_count"] < 10:
-                self.scores[key]["article_count"] = 0.33
-            elif self.scores[key]["article_count"] < 100:
-                self.scores[key]["article_count"] = 0.66
-            else:
-                self.scores[key]["article_count"] = 1.0
-        return self.scores
-
-    def process_sentiment(self, title, body):
-        # TODO: Check stemming as a better method
-        # TODO: https://machinelearnings.co/text-classification-using-neural-networks-f5cd7b8765c6
-        tokens = nltk.word_tokenize(title + " " + body)
-        positive_pts = 0
-        negative_pts = 0
-        uncertainty_pts = 0
-        for token in tokens:
-            token = token.upper()
-            for positive_tkn in self.positive_tks:
-                if token == positive_tkn:
-                    positive_pts += 1
-            for negative_tkn in self.negative_tks:
-                if token == negative_tkn:
-                    negative_pts += 1
-            for uncertainty_tkn in self.uncertainty_tks:
-                if token == uncertainty_tkn:
-                    uncertainty_pts += 1
-        return self.softmax((positive_pts, negative_pts, uncertainty_pts))
-
-    @staticmethod
-    def softmax(vector):
-        """
-        Softmax function that favours the highest score
-        :param vector: input vector of scores
-        :return: output of the softmax
-        """
-        import math as m
-        vector = np.array(vector) / (0.5 * sum(vector))
-        e_scaled = []
-        for value in vector:
-            e_scaled.append(m.exp(value))
-        sum_e = sum(e_scaled)
-        return np.array(e_scaled) / sum_e
+            process.crawl(Spider, **{"query": self.query, "callback": self.add_headline})
+        logger.info("Starting headline scraping")
+        process.start()
+        process.stop()
+        logger.info("Finished headline scraping")
+        self.remove_duplicates()
+        return self.headlines
 
     def add_headline(self, item):
-        self.pages.append(item)
+        if isinstance(item, NewsLink):
+            new_entry = {"header": item["header"], "link": item["link"], "body": "", "time": item["time"]}
+            if item["date"] not in self.headlines.keys():
+                self.headlines[item["date"]] = [new_entry]
+            else:
+                self.headlines[item["date"]].append(new_entry)
+        else:
+            logger.warning("Received unknown item")
+
+    def remove_duplicates(self):
+        def are_duplicates(str1, str2):
+            return difflib.SequenceMatcher(a=str1, b=str2).ratio() > 0.9
+
+        logger.info("Looking for duplicates")
+
+        duplicate_count = 0
+        filtered_dict = {}
+        for date, headlines in self.headlines.items():
+            filtered_dict[date] = self.headlines[date].copy()
+            for headline1 in headlines:
+                found_duplicate = True
+                while found_duplicate:
+                    temp = filtered_dict[date].copy()
+                    found_duplicate = False
+                    found_once = False
+                    for headline2 in temp:
+                        if are_duplicates(headline1["header"], headline2["header"]):
+                            if found_once:
+                                filtered_dict[date].remove(headline2)
+                                found_duplicate = True
+                                duplicate_count += 1
+                                break
+                            else:
+                                found_once = True
+        self.headlines = filtered_dict
+        logger.info("Removed {} duplicate headlines".format(duplicate_count))
+
+    def snap_to_closest_date(self, dates, time_of_day_threshold="9:30am EST"):
+        logger.info("Snapping headlines to closest date")
+        # TODO: account for time of publication (move news after market opens to next day)
+        #       kind of important, nonetheless companies usually publish their official
+        #       announcements before market opens, so statistically it's sounds acceptable to not do it.
+        len_before = len(self.headlines)
+        readjusted_heads = {}
+        for headline_date in self.headlines.keys():
+            for i in range(7):
+                test_day = utils.days_from_date(headline_date, i)
+                if test_day in dates:
+                    if test_day not in readjusted_heads.keys():
+                        readjusted_heads[test_day] = self.headlines[headline_date]
+                    else:
+                        readjusted_heads[test_day] += self.headlines[headline_date]
+                    break
+                logger.warning("News on {} ignored, no trading day found close".format(headline_date))
+        self.headlines = readjusted_heads
+        logger.info("Snapped to closest date forward, {} news days grouped".format(len_before - len(self.headlines)))
+        return self.headlines
+
+    def filter_dates(self, dates):
+        len_before = len(self.headlines)
+        self.headlines = {date: self.headlines[date] for date in dates if date in self.headlines.keys()}
+        logger.info("Filter applied, {} news days removed".format(len_before - len(self.headlines)))
+        return self.headlines
+
+    def read_articles(self, headlines=None, save_continuously=False, save_dir=""):
+        if headlines is None:
+            headlines = self.headlines
+        extractor = Goose()
+        for date, daily_news in headlines.items():
+            # Shuffle since if there are too many some will be ignored
+            # and we want the ignored ones to be randomly deselected
+            shuffle(daily_news)
+
+            news_read = []
+            for new in daily_news:
+                try:
+                    body = extractor.extract(url=new["link"]).cleaned_text
+                    news_read.append({**new, "body": body})
+                    if len(self.news) == settings["max_news_per_day"]:
+                        break
+                except NetworkError:
+                    logger.error("Page not found in {}".format(new["link"]))
+                except MissingSchema:
+                    logger.warning("Couldn't read link {}".format(new["link"]))
+                    logger.warning("  Reason: string 'http://' might be missing")
+                except Exception as e:
+                    logger.warning("Unknown exception while trying to read {}".format(new["link"]))
+                    logger.warning("   {}".format(e))
+            if len(news_read) > 0:
+                self.news[date] = news_read
+                if save_continuously:
+                    if save_dir == "":
+                        logger.warning("Please provide a save directory")
+                    else:
+                        self.save_news(save_dir, {date: news_read})
+        logger.info("From {} headlines, {} of their articles where correctly downloaded".format(
+            sum([len(headers) for headers in self.headlines.values()]),
+            sum([len(day_news) for day_news in self.news.values()])))
+        return self.news
+
+    def save_headlines(self, save_dir):
+        logger.info("Saving news headlines to {}".format(save_dir))
+        if not os.path.exists(save_dir):
+            logger.error("Directory not found, headlines will not be saved")
+        else:
+            headlines_file_path = os.path.join(save_dir, self.heads_file_name)
+            if os.path.exists(headlines_file_path):
+                prev_headlines = json.load(open(headlines_file_path, "r"))
+            else:
+                prev_headlines = {}
+            with open(os.path.join(save_dir, self.heads_file_name), "w") as f:
+                json.dump({**prev_headlines, **self.headlines}, f, indent=4)
+
+    def save_news(self, save_dir, news=None):
+        if news is None:
+            news = self.news
+        save_dir = os.path.join(save_dir, self.news_folder)
+        logger.info("Saving news articles to {}".format(save_dir))
+        if not os.path.exists(save_dir):
+            os.makedirs(save_dir)
+        for date, daily_news in news.items():
+            json.dump(daily_news, open(os.path.join(save_dir, date + ".json"), "w"), indent=4)
+            logger.info("Saved {} news for day {}".format(len(news[date]), date))
+
+    def save_all(self, save_dir):
+        self.save_headlines(save_dir)
+        self.save_news(save_dir)
 
 
 if __name__ == "__main__":
-    # pipelines.results = []
-    crawler = StockNewsCrawler(ticker="AAPL",
-                               init_date=datetime(year=2015, month=1, day=1),
-                               end_date=datetime.today(),
-                               exchange="NASDAQ")
-    import json
-    articles = crawler.get_headlines()
-    articles = json.load(open("news_data.json", "r"))["news"]
+    crawler = StockNewsCrawler(StockQuery(ticker="AAPL",
+                                          company_name="Apple",
+                                          init_date="2009-11-03",
+                                          end_date="2009-12-10",
+                                          keywords=["Apple", "Iphone"],
+                                          exchange="NASDAQ"))
 
-    for article in articles[:20]:
-        try:
-            art = Goose().extract(url=article["link"])
-            article["body"] = art.cleaned_text
-            print(article)
-        except:
-            continue
-
-    with open("news_data.json", "w") as f:
-        json.dump({"news": articles}, f, indent=4)
-
-    crawler.analyse_articles(articles[:6000])
-    for date, score in crawler.scores.items():
-        print(date, score["score"])
+    heads = crawler.read_headlines()
+    json.dump(heads, open("./heads.json", "w"), indent=4)
+    arts = crawler.read_articles()
+    json.dump(arts, open("./bodies.json", "w"), indent=4)

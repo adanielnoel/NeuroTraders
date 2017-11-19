@@ -11,3 +11,4 @@ class Settings:
 
 
 settings = Settings(os.path.join(os.path.dirname(os.path.realpath(__file__)), "default_settings.json"))
+

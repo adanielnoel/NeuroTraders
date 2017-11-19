@@ -1,0 +1,20 @@
+[
+    {
+        "link": "http://www.reuters.com/article/brief-intel-and-amd-team-up-on-pc-chips/brief-intel-and-amd-team-up-on-pc-chips-to-battle-nvidia-wsj-idUSFWN1NC0R3",
+        "body": "* Intel and AMD team up on PC chips to battle Nvidia- WSJ, citing sources\u200d\u200b\n\n* Intel plans to announce laptop-computer chip that combines an Intel processor and an AMD graphics unit- WSJ, citing sources\u200d\u200b Source text : on.wsj.com/2ixPTBZ",
+        "header": "BRIEF-Intel and AMD team up on PC chips to battle Nvidia- WSJ",
+        "time": "6:11AM UTC"
+    },
+    {
+        "link": "http://www.reuters.com/article/us-intel-amd/rivals-amd-intel-partner-to-take-on-nvidia-idUSKBN1D6215",
+        "body": "(Reuters) - Bitter rivals Advanced Micro Devices Inc and Intel Corp on Monday unveiled a partnership that will help the chipmakers take on Nvidia Corp.\n\nUnder the partnership, AMD\u2019s semi-custom graphics chip will be integrated into Intel\u2019s new multi-chip processor package for personal computing.\n\nAMD\u2019s shares were up 6.5 percent at $11.84 in early trading. Intel was up 1 percent, while Nvidia was down 0.5 percent.\n\nDesigned by Intel, the new product will integrate an Intel core processor together with a semi-custom radeon graphic chip and second-generation high bandwidth memory (HBM2) into one package, AMD said in a statement.",
+        "header": "Rivals AMD, Intel partner to take on Nvidia",
+        "time": "10:32AM UTC"
+    },
+    {
+        "link": "http://www.reuters.com/article/brief-amd-delivers-semi-custom-graphics/brief-amd-delivers-semi-custom-graphics-chip-for-new-intel-processor-idUSFWN1NC15Z",
+        "body": "* Advanced Micro Devices Inc - \u200dIt designed a semi-custom GPU that will be integrated into a new Intel multi-chip processor package\u200b\n\n* Advanced Micro Devices Inc - \u200dIntel expects new chip to launch in Q1 of 2018\u200b Source text for Eikon: Further company coverage:",
+        "header": "BRIEF-AMD delivers semi-custom graphics chip for new Intel processor",
+        "time": "11:26AM UTC"
+    }
+]

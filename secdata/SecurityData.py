@@ -13,13 +13,14 @@ class SecurityData:
     statistics_file_name = "fixed_data.json"
     info_file_name = "info.json"
 
-    def __init__(self, database_dir, auto_load=True):
+    def __init__(self, query, database_dir, auto_load=True):
         self.time_data = pandas.DataFrame()
         self.statistics = dict()
+        self.query = query
         self.db_dir = database_dir
         self.info_file_dir = os.path.join(self.db_dir, self.info_file_name)
-        self.time_data_file_dir = os.path.join(self.db_dir, self.time_data_file_name)
-        self.statistics_file_dir = os.path.join(self.db_dir, self.statistics_file_name)
+        self.time_data_file_path = os.path.join(self.db_dir, self.time_data_file_name)
+        self.statistics_file_path = os.path.join(self.db_dir, self.statistics_file_name)
 
     def __getitem__(self, attr):
         if attr in self.time_data.columns:
@@ -32,21 +33,22 @@ class SecurityData:
     def load(self):
         if not os.path.exists(self.db_dir):
             return
+        # TODO: also save statistics
+        # try:
+        #     with open(self.statistics_file_dir, "r") as f:
+        #         self.statistics = json.load(f)
+        # except Exception as e:
+        #     logger.warning("Statistics could not be loaded from {}".format(self.statistics_file_dir))
+        #     logger.warning("  Reason: %s" % e)
         try:
-            with open(self.statistics_file_dir, "r") as f:
-                self.statistics = json.load(f)
+            self.time_data = pandas.read_csv(self.time_data_file_path, header=0, index_col=0)
         except Exception as e:
-            logger.warning("Statistics could not be loaded from {}".format(self.statistics_file_dir))
-            logger.warning("  Reason: %s" % e)
-        try:
-            self.time_data_file_name = pandas.read_csv(self.time_data_file_dir, header=0, index_col=0)
-        except Exception as e:
-            logger.warning("Time data could not be loaded from {}".format(self.time_data_file_dir))
+            logger.warning("Time data could not be loaded from {}".format(self.time_data_file_path))
             logger.warning("  Reason: %s" % e)
 
     def save(self):
-        self.time_data.to_csv(self.time_data_file_dir)
-        with open(self.statistics_file_dir, "w") as f:
+        self.time_data.to_csv(self.time_data_file_path)
+        with open(self.statistics_file_path, "w") as f:
             json.dump(self.statistics, f)
 
     @property

@@ -5,9 +5,17 @@
   "stock_cols": {
     "adj_open": {"provider": "StockValues", "quandl_name": "Adj. Open"},
     "adj_close": {"provider": "StockValues", "quandl_name": "Adj. Close"},
+    "adj_high": {"provider": "StockValues", "quandl_name": "Adj. High"},
+    "adj_low": {"provider": "StockValues", "quandl_name": "Adj. Low"},
     "adj_vol": {"provider": "StockValues", "quandl_name": "Adj. Volume"},
+    "adj_close_tomorrow": {"provider": "StockValues"},
+    "adj_open_tomorrow": {"provider": "StockValues"},
     "vol_m_ave_10": {"provider": "StockValues"},
-    "relative_close": {"provider": "StockValues"},
-    "sentiment": {"provider": "StockSentiment"}
+    "relative_intraday": {"provider": "StockValues"},
+    "vol_rel_m_ave_10": {"provider": "StockValues"},
+    "relative_overnight": {"provider": "StockValues"},
+    "relative_overnight_tomorrow": {"provider": "StockValues"},
+    "relative_intraday_tomorrow": {"provider": "StockValues"},
+    "sentiment": {"provider": "NewsAnalyser"}
   }
 }

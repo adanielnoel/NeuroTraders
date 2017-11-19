@@ -1,56 +1,58 @@
 import scrapy
 from scrapy.spiders import Spider
 from scrapy.selector import Selector
-from scrapy import Request
-from dateutil import parser
-from secdata.news_scraper.items import NewsLink
 from datetime import datetime
-import nltk
-from Database.utils import get_company_name
+from dateutil import rrule
+
+from secdata.news_scraper.items import NewsLink
+from secdata import utils
 
 import logging
-logging.getLogger('scrapy').setLevel(logging.FATAL)
+# logging.getLogger('scrapy').setLevel(logging.INFO)
+# logging.getLogger('scrapy.core.scraper').setLevel(logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 class ReutersSearch(Spider):
     name = "google_finance"
     allowed_domains = ["reuters.com"]
 
-    def __init__(self, ticker, start_date, end_date, exchange, manager_crawler):
+    def __init__(self, query, callback):
         scrapy.Spider.__init__(self)
-        self.company_name = get_company_name(ticker).lower()
-        self.ticker = ticker
-        self.start_urls = ["http://www.reuters.com/resources/archive/us/2007.html",
-                           "http://www.reuters.com/resources/archive/us/2008.html",
-                           "http://www.reuters.com/resources/archive/us/2009.html",
-                           "http://www.reuters.com/resources/archive/us/2010.html",
-                           "http://www.reuters.com/resources/archive/us/2011.html",
-                           "http://www.reuters.com/resources/archive/us/2012.html",
-                           "http://www.reuters.com/resources/archive/us/2013.html",
-                           "http://www.reuters.com/resources/archive/us/2014.html",
-                           "http://www.reuters.com/resources/archive/us/2015.html",
-                           "http://www.reuters.com/resources/archive/us/2016.html",
-                           "http://www.reuters.com/resources/archive/us/2017.html"]
-        self.manager_crawler = manager_crawler
-        # TODO: Fix this shitty way of passing around the crawler
+        if hasattr(query, "filter_dates"):
+            self.start_urls = ["http://www.reuters.com/resources/archive/us/{}.html".format(
+                               utils.text_to_datetime(date).strftime('%Y%m%d')) for date in query.filter_dates]
+        else:
+            self.start_urls = ["http://www.reuters.com/resources/archive/us/{}.html".format(date.strftime('%Y%m%d'))
+                               for date in rrule.rrule(rrule.DAILY,
+                                                       dtstart=utils.text_to_datetime(query.init_date),
+                                                       until=utils.text_to_datetime(query.end_date))]
+        print(self.start_urls)
+        self.query = query
+        self.callback = callback
 
     def parse(self, response):
-        print(response.url)
         sel = Selector(response)
-        # news = sel.xpath('//div[@class="news"]').extract()
-        # news = sel.css('.news') #.css('.name').xpath('a/text()').extract()
-        days = sel.xpath('//div[@class="moduleBody"]/p/a/@href').extract()
-        for day_link in days:
-            yield Request("http://www.reuters.com" + day_link, callback=self.parse_news_list)
-
-    def parse_news_list(self, response):
-        sel = Selector(response)
-        news= sel.xpath('//div[@class="module"]//a')
+        news = sel.xpath('//div[@class="module"]/div[@class="headlineMed"]')
         date = datetime.strptime(response.url.split('/')[-1].split('.')[0], "%Y%m%d").strftime("%Y-%m-%d")
 
+        logger.info("Scraping news for date {}".format(date))
         for new in news:
-            link = new.xpath('@href').extract()[0]
-            title = new.xpath('text()').extract()[0].lower()
-            if self.company_name in title or self.ticker in title:
-                yield NewsLink(date=date, title=title, link=link)
+            try:
+                link = new.xpath('a/@href').extract()[0]
+                title = new.xpath('a/text()').extract()[0]
+            except Exception:
+                logger.debug("   New discarded due to empty field")
+                continue
+            try:
+                time = new.xpath('text()').extract()[0].strip()
+            except Exception:
+                time = ""
+            for keyword in self.query.keywords:
+                if keyword.lower() in title.lower():
+                    item = NewsLink(date=date, header=title, link=link, time=time)
+                    self.callback(item)
+                    logger.info("   Headline: {}".format(title))
+                    # yield item
+                    break
 

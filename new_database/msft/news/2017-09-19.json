@@ -1,0 +1,14 @@
+[
+    {
+        "header": "Microsoft's Hotmail and Outlook.com suffer all-day outage in Europe",
+        "link": "http://www.reuters.com/article/microsoft-outages/microsofts-hotmail-and-outlook-com-suffer-all-day-outage-in-europe-idUSL5N1LZ5EX",
+        "time": "3:24PM UTC",
+        "body": "FRANKFURT, Sept 18 (Reuters) - Microsoft\u2019s free email services Outlook.com and Hotmail suffered an outage across Europe on Monday, preventing users from sending and receiving emails for 12 hours.\n\nThe outage began at 0720 GMT and continued to affect users across the region nearly 12 hours later, Microsoft said in a blog post on its Office 365 security site.\n\nMicrosoft said it was working to resolve the glitch and would issue an update later on Monday on the status of its services.\n\n\u201cWe\u2019re continuing to investigate to determine the source of the issue and to identify service recovery steps,\u201d the firm said.\n\nIt said the issue involved part of the company\u2019s internet traffic load-balancing system which was gobbling up server capacity despite no apparent increase in user traffic.\n\nOutage reports were concentrated in Western Europe and Britain, according to DownDetector.co.uk, an outage reporting site. No other major Microsoft online services appeared to be affected."
+    },
+    {
+        "header": "Microsoft's Hotmail, Outlook.com services back up after outage",
+        "link": "http://www.reuters.com/article/us-microsoft-outages/microsofts-hotmail-outlook-com-services-back-up-after-outage-idUSKCN1BT2FY",
+        "time": "10:41PM UTC",
+        "body": "FRANKFURT (Reuters) - Microsoft Corp said its free email services Outlook.com and Hotmail, which suffered an outage across Europe on Monday, were back up.\n\n\"Everything is up and running,\" Microsoft said in a blog post on its Office 365 security site. bit.ly/2w3X1LD\n\nThe outage began at 0720 GMT and continued to affect users across the region for more than 12 hours, preventing them from sending and receiving emails, Microsoft said in a blog post on its Office 365 security site.\n\nMicrosoft said the issue involved part of the company\u2019s internet traffic load-balancing system which was gobbling up server capacity despite no apparent increase in user traffic.\n\nOutage reports were concentrated in Western Europe and Britain, according to DownDetector.co.uk, an outage reporting site. No other major Microsoft online services appeared to be affected."
+    }
+]

@@ -1,0 +1,8 @@
+[
+    {
+        "link": "http://www.reuters.com/article/idgSmallBusiness/idUS307131402620100518",
+        "body": "Intel Corp. announced today that it is shipping to equipment manufacturers its 25-nanometer (nm) NAND flash memory chip, which doubles the capacity of its previous 34nm chip.\n\nIntel announced its new chip , which can hold 8GB of data, last February. Manufacturers of solid state drives (SSD), USB sticks and removable and embedded memory cards put multiple NAND flash chips on a board along with multiple I/O paths to create mass storage devices.\n\nThe new chip, manufactured by Intel\u2019s and Micron Technology\u2019s joint venture company, IMFT, measures 0.35-in. by 0.74-in., but it can hold 7,000 photos, eight hours of video or 2,000 songs.\n\nThe 25nm NAND flash chip is made up of many small 64Gbit NAND chips. IMFT\u2019s latest lithography technology makes it possible to build products using half as many chips as is possible with the current 34nm lithography technology, allowing for smaller, higher-density designs.\n\nFor example, a 256GB SSD can be built with 32 of the 8GB NAND flash dies instead of 64 dies; a 32GB smartphone needs just four dies; and a 16GB flash card requires only two. The change also cuts the overall cost to produce mobile products.\n\nLucas Mearian covers storage, disaster recovery and business continuity, financial services infrastructure and health care IT for Computerworld . Follow Lucas on Twitter at @lucasmearian or subscribe to Lucas\u2019s RSS feed . His e-mail address is lmearian@computerworld.com .\n\nRead more about processors in Computerworld\u2019s Processors Knowledge Center.",
+        "header": "Intel ships world's densest NAND flash chip",
+        "time": "7:11PM UTC"
+    }
+]

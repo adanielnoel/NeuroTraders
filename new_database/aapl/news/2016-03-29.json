@@ -1,0 +1,32 @@
+[
+    {
+        "time": "9:57PM UTC",
+        "header": "brief-apple on government dropping case over encrypted iphone- \"this case should never have been brought\" - cnbc",
+        "link": "http://www.reuters.com/article/idUSFWN1700CI",
+        "body": "March 28 (Reuters) - Apple Says From Beginning Objected To Fbi\u2019s Demand That Apple Build A Backdoor Into Iphone Because It Would Set A Dangerous Precedent\n\n* \u201cthis case should never have been brought\u201d - cnbc\n\n* Will continue to help law enforcement with investigations - cnbc Further company coverage: [ ] (Reporting By Shivam Srivastava)"
+    },
+    {
+        "time": "6:39PM UTC",
+        "header": "u.s. drops legal action against apple over encrypted iphone",
+        "link": "http://www.reuters.com/article/apple-encryption-idUSL2N1701OS",
+        "body": "SAN FRANCISCO (Reuters) - The U.S. Justice Department dropped a high-stakes legal fight against Apple on Monday, saying the government successfully accessed data stored on an encrypted iPhone used by one of the San Bernardino shooters.\n\nThe government had insisted until last week it had no way to access the phone used by Rizwan Farook except to force Apple to write new software that would disable the password protection.\n\nThe Justice Department obtained a court order last month directing Apple to create that software. But the technology company fought back, arguing the order was an overreach by the government and would undermine computer security for everyone.\n\nAt issue was a county-owned iPhone used by Farook, one of the husband-and-wife shooters in the San Bernardino, California, rampage in December in which 14 people were killed and 22 wounded. The couple died in a shootout with police after the attack.\n\nU.S. officials said last week they were hopeful they would be able to unlock the iPhone without help from Apple.\n\nIn a two-page court filing on Monday, the Justice Department said the government \u201cno longer requires\u201d Apple\u2019s assistance. It asked a federal magistrate in Riverside, California, to withdraw her order compelling Apple to assist.\n\nApple had argued that the government request would create a \u201cback door\u201d to phones that could be abused by criminals and governments, and that Congress has not given the Justice Department authority to make such a demand.\n\nTech industry leaders including Google, Facebook and Microsoft and more than two dozen other companies filed legal briefs supporting Apple. The Justice Department received support from law enforcement groups and six relatives of San Bernardino victims.\n\nEileen Decker, the top federal prosecutor in Los Angeles, said in a statement on Monday that the government\u2019s request to Apple was part of its \u201csolemn commitment\u201d to the victims.\n\n\u201cAlthough this step in the investigation is now complete, we will continue to explore every lead, and seek any appropriate legal process, to ensure our investigation collects all of the evidence related to this terrorist attack,\u201d Decker said. (Additional reporting by Eric Beech in Washington)"
+    },
+    {
+        "time": "5:35PM UTC",
+        "header": "u.s. expected to withdraw legal action against apple -usa today",
+        "link": "http://www.reuters.com/article/apple-encryption-idUSW1N16O005",
+        "body": "WASHINGTON, March 28 (Reuters) - The U.S. Justice Department is expected to withdraw its legal action in California seeking to force Apple to unlock an iPhone used by one of the San Bernardino shooters, USA Today reported on Monday on Twitter, citing an unnamed government official.\n\nU.S. officials said last week that they are hopeful they will be able to unlock the iPhone without help from Apple ."
+    },
+    {
+        "time": "10:11PM UTC",
+        "header": "brief-fbi says it can't comment on how it unlocked san bernardino shooter's iphone - cnbc",
+        "link": "http://www.reuters.com/article/idUSFWN1700B1",
+        "body": "BRIEF-FBI says it can't comment on how it unlocked San Bernardino shooter's iPhone - CNBC"
+    },
+    {
+        "time": "7:15PM UTC",
+        "header": "brief-u.s. has accessed data on encrypted apple iphone-filing",
+        "link": "http://www.reuters.com/article/idUSL2N1701M8",
+        "body": "* U.S. Justice Department will withdraw request for Apple\u2019s assistance to access iPhone belonging to San Bernardino shooter-law enforcement official familiar with situation\n\n* U.S. Justice Department says it has successfully accessed data stored on iPhone which belonged to San Bernardino shooter- court filing\n\n* Justice Department requests court to vacate order compelling Apple to help access data on San Bernardino Shooter\u2019s iPhone\n\n* Senior law enforcement official says it is \u201cpremature\u201d to say whether the technology used to access iPhone in San Bernardino case will work with other phones (Reporting By Dan Levine)"
+    }
+]
