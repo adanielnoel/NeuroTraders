@@ -1,3 +1,6 @@
+# Code adapted from http://www.jakob-aungiers.com/articles/a/LSTM-Neural-Network-for-Time-Series-Prediction
+# Author: Jakob Aungiers
+
 import pickle
 import time
 import pandas as pd

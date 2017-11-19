@@ -1,3 +1,6 @@
+# Code extracted from http://www.jakob-aungiers.com/articles/a/LSTM-Neural-Network-for-Time-Series-Prediction
+# Author: Jakob Aungiers
+
 import os
 import time
 import warnings
