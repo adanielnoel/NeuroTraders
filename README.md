@@ -1,7 +1,7 @@
 # NeuroTraders
 
 With the advent of recurrent neural networks becoming increasingly popular in solving complex time-series predictions, we decided to give it a try in predicting stock prices using recurrent neural networks with LSTM architecture. Moreover, we combine stock market data with online news from different sources.
-The paper can be downloaded [ADD LINK HERE].
+The paper is included in the main folder of the repository.
  
 ## Project structure
 
