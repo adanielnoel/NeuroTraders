@@ -67,7 +67,7 @@ predict = 'adj_close_tomorrow'
 del_inputs = [key for key in input_dictionary if not input_dictionary[key]]
 used_inputs = [key for key in input_dictionary if input_dictionary[key]]
 
-# To save model results
+# To save model results - user can change directory
 directory = "./Results/" + \
             ticker + '_' + predict + '_full_' + str(datetime.now().strftime('%Y-%m-%d_%H-%M-%S'))
 if not os.path.exists(directory):
@@ -90,7 +90,8 @@ test_interval_1 = (0.6, 1.0)
 train_interval_2 = (0.6, 0.9)
 test_interval_2 = (0.9, 1.0)
 
-# TUNABLE NEURAL NET HYPERPARAMETERS
+""" Tune Neural Net hyperparameters - for both neural net 1 and neural net 2"""
+
 # Net 1
 epochs1 = 106
 batch_size1 = 64
@@ -102,7 +103,8 @@ batch_size2 = 64
 learning_rate2 = 0.0001  # 0.001 is default for Adam optimizer -- usually an ok learning rate
 dropout2 = 0
 
-# Pose dataset as a supervised learning problem - see ml_data_prepper methods
+""" Pose dataset as a supervised learning problem - see ml_data_prepper methods for further info"""
+
 prepared_data = prepare_lstm_data(dataframe=dataframe, predict=predict, del_inputs=del_inputs,
                                   timestep=1, use_present_vars=False, n_in=1, n_out=1, scaler='MinMax',
                                   feature_range=(0, 1), train_interval_1=train_interval_1,
@@ -118,7 +120,9 @@ scaler = prepared_data[5]
 train_X_2 = prepared_data[6]
 test_X_2 = prepared_data[7]
 
-# Create and compile first Neural Network Model - stock price predictor
+""" Create and compile Neural Network Models"""
+
+# First Neural Network model - STOCK PRICE PREDICTOR
 model1 = Sequential()
 if which_regularizer_1 == "l1":
     model1.add(LSTM(120, return_sequences=True, input_shape=(train_X_1.shape[1], train_X_1.shape[2]),
@@ -141,7 +145,7 @@ model1.add(Dense(1))
 adam1 = optimizers.Adam(lr=learning_rate1, beta_1=0.9, beta_2=0.999, epsilon=1e-08, decay=0.0)
 model1.compile(loss='mae', optimizer=adam1)
 
-# Create second Neural Network Model - ABSOLUTE ERROR PREDICTOR
+# Second Neural Network Model - ABSOLUTE ERROR PREDICTOR
 model2 = Sequential()
 if which_regularizer_2 == "l1":
     model2.add(LSTM(100, return_sequences=True, input_shape=(train_X_2.shape[1], train_X_2.shape[2]),
@@ -164,6 +168,8 @@ else:
 model2.add(Dense(1))
 adam2 = optimizers.Adam(lr=learning_rate2, beta_1=0.9, beta_2=0.999, epsilon=1e-08, decay=0.0)
 model2.compile(loss='mae', optimizer=adam2)
+
+""" Train first Neural Network and predict stock prices"""
 
 # Fit first Neural Network
 print('\n Training Sequence for RNN 1 (Stock Price Predictor) Initiated!\n')
@@ -198,6 +204,7 @@ except:
     raise TypeError('Illegal input- which_errors must be a string chosen from: "Relative Unsigned", "Relative Signed", '
                     '"Actual Unsigned", "Actual Signed"')
 
+""" Train Second Neural Network and predict errors on stock price prediction"""
 
 # Fit second Neural Network and predict errors
 if scale_targets_net2:
@@ -231,6 +238,8 @@ else:  # --> elif not scale_target_net2
     inv_yhat_test_2 = yhat_test_2
     yhat_train_2 = model2.predict(train_X_2)
     inv_yhat_train_2 = yhat_train_2
+
+""" Quantify model performance, store and plot results"""
 
 # Compute test RMSE, train RMSE and baseline RMSE for Neural Net 1
 target_outputs_train_1 = dataframe[predict][:len(train_X_1)]
@@ -298,7 +307,7 @@ plt.legend()
 plt.savefig(directory+'/RNN_2_'+which_errors+' Error.png',dpi=400, bbox_inches='tight')
 plt.show()
 
-#Other plots to show off
+# Other plots to show off
 plt.title("RNN 1 (Stock Price Predictor) Prediction vs Truth - TEST")
 plt.plot(range(len(test_X_1)), inv_yhat_test_1, label='Prediction')
 plt.plot(range(len(test_X_1)), target_outputs_test_1, label='Truth')
@@ -321,8 +330,6 @@ results_for_csv = [[inv_yhat_test_1[i], target_outputs_test_1[i],
 results_2_for_csv = [[inv_yhat_test_2[i], target_outputs_test_2[i],
                       abs(inv_yhat_test_2[i] - target_outputs_test_2[i]) / target_outputs_test_2[i]]
                      for i in range(len(inv_yhat_test_2))]
-
-
 
 # Write Summary of RNN 1
 with open(directory + "/" + 'RNN_1_summary.txt', 'w') as fh:

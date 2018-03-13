@@ -29,12 +29,13 @@ import warnings
 import numpy as np
 from numpy import concatenate
 
-'''
-Paolo Rizzo         10/16/2017
+"""
+Paolo Rizzo         
+10/16/2017
 
-This is a series of methods to help convert a time series into a form that can be fed into a neural network using Keras API.
-
-'''
+This is a series of methods to help convert a time series into a structured form that can be fed into a neural network 
+using the Keras API.
+"""
 
 
 def series_to_supervised(data, n_in=1, n_out=1, dropnan=True):
@@ -81,11 +82,12 @@ def series_to_supervised(data, n_in=1, n_out=1, dropnan=True):
     return agg
 
 
-def prepare_lstm_data(dataframe, predict, del_inputs = None, timestep = 1, use_present_vars = False,n_in = 1,
-                      n_out = 1, scaler = 'MinMax', feature_range = (-1,1),
-                      train_interval_1 = (0.0,0.7), test_interval_1 = (0.7,1.0), train_interval_2 = (0.7,0.9),
-                      test_interval_2 = (0.9,1.0)):
+def prepare_lstm_data(dataframe, predict, del_inputs=None, timestep=1, use_present_vars=False, n_in=1,
+                      n_out=1, scaler='MinMax', feature_range=(-1, 1), train_interval_1=(0.0, 0.7),
+                      test_interval_1=(0.7, 1.0), train_interval_2=(0.7, 0.9), test_interval_2=(0.9, 1.0)):
+    """
 
+    """
     if type(predict) is not str:
         raise TypeError('predict parameter must be of type string - please enter the column name of the dataframe '
                         'that you wish to predict')
@@ -111,14 +113,10 @@ def prepare_lstm_data(dataframe, predict, del_inputs = None, timestep = 1, use_p
     n_vars = values.shape[1]
     if scaler == 'Custom':
         warnings.warn('You are using a custom scaling method. This must be inverted manually later!')
-        # Implement a custom scaling method below -- must be inverted manually later
-        for i in range(len(values)):
-            # DO SOMETHING TO SCALE
-            # values[i] = values[i] - np.mean(values[i])
-            # values[i] = values[i] / np.std(values[i])
-            pass
-        scaler = None
-        scaled = values
+        """
+        Block left for user to implement a custom scaling method below -- MUST BE INVERTED MANUALLY LATER, as only
+        MinMax and StandardScaler are currently supported.
+        """
     else:
         if scaler != 'MinMax' and scaler != 'StandardScaler':
             warnings.warn('The scaler '+str(scaler)+' is not supported, using MinMax instead ...\n', stacklevel=3)
@@ -134,13 +132,13 @@ def prepare_lstm_data(dataframe, predict, del_inputs = None, timestep = 1, use_p
 
     # Partition the dataset into train and test intervals, defined by the user
     train_1 = values_processed[int(train_interval_1[0] * len(values_processed)):
-                             int(train_interval_1[1] * len(values_processed))]
+                               int(train_interval_1[1] * len(values_processed))]
     test_1 = values_processed[int(test_interval_1[0] * len(values_processed)):
-                            int(test_interval_1[1] * len(values_processed))]
+                              int(test_interval_1[1] * len(values_processed))]
     train_2 = values_processed[int(train_interval_2[0] * len(values_processed)):
-                            int(train_interval_2[1] * len(values_processed))]
+                               int(train_interval_2[1] * len(values_processed))]
     test_2 = values_processed[int(test_interval_2[0] * len(values_processed)):
-                            int(test_interval_2[1] * len(values_processed))]
+                              int(test_interval_2[1] * len(values_processed))]
 
     # Divide the train and test partitions into inputs and outputs
     if use_present_vars is False:
