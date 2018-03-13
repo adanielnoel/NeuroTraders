@@ -1,8 +1,27 @@
 # NeuroTraders
+Motivated by the notable performance of modern machine learning methods in internalizing time series,
+we decided to build a deep learning pipeline for the task of stock price forecasting. 
 
-With the advent of recurrent neural networks becoming increasingly popular in solving complex time-series predictions, we decided to give it a try in predicting stock prices using recurrent neural networks with LSTM architecture. Moreover, we combine stock market data with online news from different sources.
+We propose a novel sentiment analysis technique, the Word-Graph, and use it to process thousands of online news articles.
+Sentiment data is used together with stock price data to train a system of two deep recurrent neural networks with LSTM
+architecture to predict closing prices at market open, as well as the associated absolute errors. 
+
+We have co-authored a scientific paper about our work, titled *A Deep Learning Approach to Stock Price Forecasting*, 
+in which a more detailed explanation of the learning algorithms employed and their performance can be found. 
 The paper is included in the main folder of the repository.
- 
+
+## The team
+This project was developed in a team of 4 engineering students/hackathon hackers with a passion for AI and finance:
+- Alejandro Daniel Noel (adanielnoel@gmail.com)
+- Paolo Rizzo (paolo.rizzo@outlook.com)
+- Anja Meunier
+- Daniel Martini Jimenez
+
+
+## Awards
+- Best AI Hack - *iNTUition 2017 Hackathon* in Singapore
+- Best Project in Statistical Learning & Data Mining - *Nanyang Technological University (NTU)*, Singapore
+
 ## Project structure
 
 The overall structure of the code is as follows:
@@ -15,9 +34,15 @@ The overall structure of the code is as follows:
 
 - `secdata/sentiment_analyser/models`: the different models available. So far the popular General Inquirer and the custom Word-Graph method.
 
-- `predictors/`: So far two different LSTM-based predictors, one in **Tensorflow** and one in **Keras**. Note: this part of the project is a bit messy.
+- `predictors/`: So far two different LSTM-based predictors, one in **Tensorflow** and one in **Keras**. 
 
-- `trading_sim/`: A simple trading simulator for testing the performance of different trading strategies. Note: this part of the project is also quite messy.
+    - **NOTE**: this part of the project is a bit messy,
+      it was developed at a Hackathon under serious time constraints and sleep deprivation and has not been cleaned up much since.
+
+- `trading_sim/`: A simple trading simulator for testing the performance of different trading strategies. 
+   
+    - **NOTE**: this part of the project is also quite messy, see previous note.
+
 
 - `new_database/`: The database we compiled for the project and that we decided to include so that it is easier to start experimenting with the code.
 
@@ -55,5 +80,6 @@ Other runnable scripts, used for "dirty testing" in the project are (scroll to t
 - `LSTM_test.py`: This can be found in `predictors/RNN_under_development` and might not work since it's under development. Still interesting to take a look since it's cleaner that the scripts in `predictors/RNN_used_in_paper` and has better data formatting methods.
 
 ## Further work
+The project is still under development, but at a sporadic pace, as we are very busy with our studies.
 
-Development of the project is likely to become stagnant or sporadic.
+For inquiries, ideas or collaboration opportunities, please feel free to contact *Paolo* (paolo.rizzo@outlook.com) or *Alejandro* (adanielnoel@gmail.com).
